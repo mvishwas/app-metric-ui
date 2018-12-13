@@ -1,21 +1,174 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+ <meta http-equiv="refresh" content="120" />
 
-<router-outlet></router-outlet>
+<script>
+
+function dhm(ms){
+    days = Math.floor(ms / (24*60*60*1000));
+    daysms=ms % (24*60*60*1000);
+    hours = Math.floor((daysms)/(60*60*1000));
+    hoursms=ms % (60*60*1000);
+    minutes = Math.floor((hoursms)/(60*1000));
+    minutesms=ms % (60*1000);
+    sec = Math.floor((minutesms)/(1000));
+    return days+":"+hours+":"+minutes+":"+sec;
+}
+</script>
+
+
+<div class="panel panel-heading" style="background-color:aliceblue">  
+<div class=" text-center font-weight-bold ">    
+      <h1>Application Metric</h1>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="container">
+   <div class="row">
+      <div class="col-sm-6">
+         <div class="card">
+            <div class="card-body">
+               <div class=" card card-header text-white" style="background-color:black">
+                  <div ><b>Application</b></div>
+               </div>
+               <div class=" card bg-light card-body" *ngIf=appInfo>
+                  <div><b>App Name: {{appInfo?.appName}}</b></div>
+                  <div><b>App Version: {{appInfo?.appVersion}}</b></div>
+                  <div><b>App Description: {{appInfo?.appDescription}}</b></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="col-sm-6">
+         <div class="card">
+            <div class="card-body">
+                <div class=" card card-header text-white" style="background-color:black">
+                  <div><b>Health</b> </div>
+               </div>
+                <div class=" card bg-light card-body" *ngIf=appHealthDetail>
+                     <div><b>Application:</b><b style="color: red"> {{appHealthDetail?.status}}</b></div>
+                     <div><b>Disk Details</b></div>
+                     <div><b>Disk Status: {{appHealthDetail?.diskSpace?.status}} </b></div>
+                     <div><b>Disk Space: {{appHealthDetail?.diskSpace?.total /(1024*1024*1024)| number:0}} G</b></div>
+                     <div><b>Free: {{appHealthDetail?.diskSpace?.free/(1024*1024*1024)| number:0}} G</b></div>
+                  </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-6">
+          <div class="card">
+             <div class="card-body">
+                <div class=" card card-header text-white" style="background-color:black">
+                  <div><b>Memory</b> </div>
+               </div>
+               <div class=" card bg-light card-body" *ngIf=appMetricsDetail>
+                  <div><b>Total JVM Memory: {{appMetricsDetail?.mem /(1024)| number:0}} M </b></div>
+                  <div><b>JVM Free Space: {{appMetricsDetail['mem.free'] /(1024)| number:0}} M </b></div>
+                  <div><b>JVM Memory Used: {{appMetricsDetail?.mem /(1024)- appMetricsDetail['mem.free']/(1024)| number:0 }} M </b></div>
+                  <div><progress class="progress" value="{{appMetricsDetail?.mem - appMetricsDetail['mem.free']}}" max="{{appMetricsDetail?.mem }}"></progress></div>
+                  <div><b>Initial Heap: {{appMetricsDetail['heap.init'] /(1024)| number:0}}  M</b></div>
+                  <div><b>Heap Used: {{appMetricsDetail['heap.used']/(1024)| number:0}}  M</b></div>
+                  <div><b>Maximum Heap: {{appMetricsDetail?.heap/(1024)| number:0}}  M</b></div>
+               </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="col-sm-6">
+      <div class="card">
+         <div class="card-body">
+            <div class=" card card-header text-white" style="background-color:black">
+               <div><b>JVM</b> </div>
+            </div>
+             <div class="card bg-light card-body" *ngIf=appMetricsDetail>                             
+                  <div><b>Uptime: {{(appMetricsDetail?.uptime / 1000)/ 60 | number:0 }} Min</b></div>
+                  <div><b>Available Processor: {{appMetricsDetail?.processors}} </b></div>
+             </div>           
+            <div class="card bg-light card-body" *ngIf=appMetricsDetail>   
+                <div>
+                    <b>Threads</b>
+                  </div>  
+                <div><b>Current Threads: {{appMetricsDetail?.threads}} </b></div>                         
+                <div><b>Daemon: {{appMetricsDetail['threads.daemon']}}</b></div>
+                <div><b>Total Started: {{appMetricsDetail['threads.totalStarted']}} </b></div>
+                <div><b>Peak: {{appMetricsDetail['threads.peak']}} </b></div>             
+           </div>
+           <div class="card bg-light card-body" *ngIf=appMetricsDetail>   
+              <div>
+                  <b>Classes</b>
+                </div>  
+              <div><b>Total Loaded: {{appMetricsDetail?.classes}} </b></div>                         
+              <div><b>Current Loaded: {{appMetricsDetail['classes.loaded']}}</b></div>
+              <div><b>Unloaded: {{appMetricsDetail['classes.unloaded']}} </b></div>                          
+         </div>
+        </div>
+      </div>
+   </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card">
+           <div class="card-body">
+              <div class=" card card-header text-white" style="background-color:black">
+                <div><b>Garbage Collection</b> </div>
+             </div>
+             <div class=" card bg-light card-body" *ngIf=appMetricsDetail>
+                <div><b>ps_scavenge</b></div>
+                <div><b>Count: {{appMetricsDetail['gc.ps_scavenge.count']}}</b></div>
+                <div><b>Time: {{appMetricsDetail['gc.ps_scavenge.time'] }}</b></div>    
+             </div>
+             <div class=" card bg-light card-body" *ngIf=appMetricsDetail>
+                <div>
+                    <b>ps_marksweep</b>
+                  </div>
+                  <div><b>Count: {{appMetricsDetail['gc.ps_marksweep.count']}}</b></div>
+                  <div><b>Time: {{appMetricsDetail['gc.ps_marksweep.time'] }}</b></div>
+             </div>
+       </div>
+    </div>
+ </div>
+ 
+ <div class="col-sm-6">
+    <div class="card">
+       <div class="card-body">
+           <div class=" card card-header text-white" style="background-color:black">
+             <div><b>Environment</b> </div>
+          </div>
+           <div class=" card bg-light card-body" *ngIf=appEnvDetail>              
+                <div><b>Java: {{appEnvDetail?.systemProperties['java.version']}} </b></div>
+                <div><b>Operating System: {{appEnvDetail?.systemProperties['os.name']}} </b></div>                
+             </div>
+       </div>
+    </div>
+ </div>
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer font-small black">
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2018 Copyright:
+       DELL EMC
+    </div>
+    <!-- Copyright -->
+  
+  </footer>
+  <!-- Footer -->
